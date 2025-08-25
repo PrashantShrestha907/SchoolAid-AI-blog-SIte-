@@ -1,12 +1,23 @@
+// /** @type {import('tailwindcss').Config} */
+// export default {
+//   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+//   theme: {
+//     extend: {
+//       screens:{
+//         'min-900':'990px'
+//       }
+//     },
+//   },
+//   plugins: [],
+// };
+
 /** @type {import('tailwindcss').Config} */
-export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
-    extend: {
-      screens:{
-        'min-900':'990px'
-      }
-    },
+    extend: {},
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };

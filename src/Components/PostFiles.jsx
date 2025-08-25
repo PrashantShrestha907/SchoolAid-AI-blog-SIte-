@@ -1,41 +1,88 @@
-import { IKImage } from 'imagekitio-react'
-import { Link } from 'react-router-dom';
+import { IKImage } from "imagekitio-react";
+import { Link, useNavigate } from "react-router-dom";
 
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { AuthContext } from "./Context/AuthContext";
+
+const PostFiles = ({ postData, postId }) => {
+  const navigate = useNavigate();
+  const {user} = useContext(AuthContext)
+  const handleCategory = (category) =>{
+    navigate(`/postlist?category=${category}`)
+  }
+  const mutation = useMutation({
+    mutationFn: async()=>{
+      return axios.patch(`http://localhost:3000/post/visit/${postData._id}`,{
+        userId: user._id
+      })
+    },
+    onSuccess:()=>{
+       navigate(`/post/${postData.slug}`)
+    }
+  })
+  // console.log(postData)
+  const handleRedirect = (postData)=>{
+   mutation.mutate();
+  }
+  const handleAuthor = (user)=>{
+    navigate(`/postlist?author=${user}`)
+
+  }
+  if (!postData) return null;
+  const formattedDate = new Date(postData.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour:"numeric",
+      minute:"numeric"
+    }
+  );
 
 
-
-const PostFiles = () => {
-
-  
   return (
     <div>
-
-
-      <div className='flex flex-col lg:flex-row gap-5 mb-11 relative'>
-
+      <div className="flex flex-col lg:flex-row gap-6 mb-11 relative items-start">
         <IKImage
           urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
-          path="/postImg.jpeg"
+           {...(postData.img ? { src: postData.img } : { path: "/postImg.jpeg" })}
+          // src="/postImg.jpeg"
+          // src={postData.img||"./postImg.jpeg"}
           loading="lazy"
           lqip={{ active: true, quality: 20 }}
-          className="object-cover w-80 h-[15rem] rounded-3xl "
+          className="object-cover w-80 h-[15rem] rounded-3xl"
         />
 
-        <div className='flex flex-col gap-y-5 '>
-          <Link to="/post" className='text-3xl font-bold'>Understanding Basics About Essential Hooks in React</Link>
-          <p className='text-blue-500'>Written by <span className='text-blue-800'>Prashant Shrestha</span> on <span className='text-blue-800'>Development</span> 2 days ago</p>
-          <p>React Hooks are special functions that let you “hook into” React features from functional components. The most commonly used hooks include useState, which allows you to add state to a component, and useEffect, which lets you perform side effects such as data fetching or subscribing to events. These hooks simplify component logic and promote code reuse without relying...<Link to="" className='text-blue-800 underline decoration-blue-900 hover:text-blue-950 px-5'>Read More</Link></p>
-          
+        <div className="flex flex-col gap-y-5 ">
+          <Link to={`/post/${postData.slug}`}className="text-3xl font-bold">
+            {postData.title}
+          </Link>
+          <p className="text-blue-500">
+            Written by
+            <span className="text-blue-800 mx-1 cursor-pointer" onClick={()=>handleAuthor(postData.user.username)}>{postData.user.username}</span> on{" "}
+            <span className="text-blue-800 mx-1 cursor-pointer" onClick={()=>handleCategory(postData.category)}>{postData.category}</span>
+            {formattedDate}
+          </p>
+          <div
+            dangerouslySetInnerHTML={{ __html: postData.content }}
+          />
+          {/* <Link
+            to={`/post/${postData.slug}`}
+            className="text-blue-800 underline decoration-blue-900 hover:text-blue-950 px-5"
+          >
+            Read More
+          </Link> */}
+          <div  className="text-blue-800 underline decoration-blue-900 hover:text-blue-950 px-0 cursor-pointer w-max" onClick={()=>handleRedirect()}>
+            Read More
+          </div>
+          <span className="text-blue-800 cursor-default">Views: {postData.visit}</span>
         </div>
-
-
       </div>
-
     </div>
+  );
+};
 
-
-  )
-}
-
-export default PostFiles
+export default PostFiles;

@@ -1,11 +1,44 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Navbar from '../Components/Navbar'
 import { Link } from 'react-router-dom'
 import { IKImage } from 'imagekitio-react'
 import PostFiles from '../Components/PostFiles'
+import { AuthContext } from '../Components/Context/AuthContext'
+import axios from 'axios'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
+const FetchPost = async (pageParam) => {
+  const res = await axios.get("http://localhost:3000/post", {
+    params: { page: pageParam },
+  });
+  return res.data;
+};
 
 const Homepage = () => {
+  const {user} = useContext(AuthContext)
+  const {token} = useContext(AuthContext)
+
+   const {  
+    data,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    status, } = useInfiniteQuery({
+    queryKey: ["projects"],
+    queryFn: ({ pageParam = 1 }) => FetchPost(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.hasMore ? pages.length + 1 : undefined,
+  });
+
+  const newData = data?.pages?.flatMap((page) => page.posts) || [];
+
+  if (status === "loading") return "Loading...";
+  if (status === "error") return "Something Went Wrong!";
+
   return (
     <>
       <div className='px-4 md:px-8 lg:px-16 xl:px-32 z-1'>
@@ -16,7 +49,7 @@ const Homepage = () => {
 
         <div className='flex gap-8 py-10 '>
           <Link to="/">Home</Link>
-          <Link to="" className='text-blue-800'>Blogs and articles</Link>
+          <Link to="/postlist" className='text-blue-800'>Blogs and articles</Link>
         </div>
 
         {/* title and golchakri */}
@@ -87,11 +120,11 @@ const Homepage = () => {
           {/* links */}
           <div className='flex items-center flex-wrap justify-start gap-x-12 gap-y-4 px-6 py-3 '>
             <span className='text-white py-1.5 px-4 bg-blue-800 rounded-3xl whitespace-nowrap'>All Posts</span>
-            <Link to="" className='whitespace-nowrap'>Web Design</Link>
-            <Link to="" className='ml-2'>Development</Link>
-            <Link to="" className='ml-2'>Databases</Link>
-            <Link to="" className='whitespace-nowrap ml-2'>Search Engines</Link>
-            <Link to="" className='ml-2'>Marketing</Link>
+            <Link to="postlist?category=Physics" className='whitespace-nowrap'>Physics</Link>
+            <Link to="postlist?category=Chemistry" className='ml-2'>Chemistry</Link>
+            <Link to="postlist?category=Math" className='ml-2'>Math</Link>
+            <Link to="postlist?category=Biology" className='whitespace-nowrap ml-2'>Biology</Link>
+            <Link to="postlist?category=Computer" className='ml-2'>Computer</Link>
           </div>
           <div>
             <span className='font-semibold px-4'>|</span>
@@ -193,14 +226,37 @@ const Homepage = () => {
 
         {/* Recent Posts */}
          <p className='text-xl font-medium text-blue-700 mb-8'>Recent Post</p>
-        
-       <PostFiles/>
-       <PostFiles/>
-       <PostFiles/>
-       <PostFiles/>
-       <PostFiles/>
-       <PostFiles/>
-       <PostFiles/>
+         <InfiniteScroll
+            dataLength={newData.length} //This is important field to render the next data
+            next={fetchNextPage}
+            hasMore={!!hasNextPage}
+            loader={<h4>Loading More Posts...</h4>}
+            endMessage={
+              <p>
+                <b>All Posts Loaded!
+                </b>
+              </p>
+            }
+            
+          
+          >
+            {data ? (
+            newData.map((post, idx) =>
+              post && post._id ? (
+                <PostFiles
+                  key={post._id || idx}
+                  postData={post}
+                  postId={post._id || idx}
+                />
+              ) : (
+                <div key={idx}>Loading</div>
+              )
+            )
+          ) : (
+            <div>Loading</div>
+          )}
+          </InfiniteScroll>
+      
 
       </div>
     </>
