@@ -134,7 +134,7 @@ const Write = () => {
               <option value="General">General</option>
               <option value="Physics">Physics</option>
               <option value="Chemistry">Chemistry</option>
-              <option value="math">Math</option>
+              <option value="Math">Math</option>
               <option value="Biology">Biology</option>
               <option value="Computer">Computer</option>
             </select>
