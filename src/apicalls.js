@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { AuthContext } from "./Components/Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const uselogincall = () => {
   const {dispatch} = useContext(AuthContext)
@@ -27,6 +28,7 @@ export const uselogincall = () => {
     onError: (error) => {
       dispatch(LoginFailure(error.message || "Login failed"));
       console.log(error.message)
+      toast.error("Username and Password did not match")
     },
   });
 };

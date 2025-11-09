@@ -90,7 +90,7 @@ const Navbar = () => {
           
             {user ? (
               <div onClick={() => navigate("/profile")} className="cursor-pointer">
-                <img src={user.img}  className="hidden lg:block lg:object-cover w-12 h-12 rounded-full flex-[0_0_40%] "
+                <img src={user?.img||"/Noavatar.jpg"}  className="hidden lg:block lg:object-cover w-12 h-12 rounded-full flex-[0_0_40%] "
                  alt="" />
               </div>
             ) : (

@@ -1,3 +1,4 @@
+import { User } from "lucide-react";
 import Comment from "../models/comment.model.js"
 
 
@@ -22,11 +23,20 @@ export const writePostComment = async(req,res)=>{
 
 }
 
-export const deleteComment = async(req,res)=>{
-  const comment = await Comment.findById({_id:req.params.id}); 
-  if(comment.user._id.toString()!== req.userId){
-    return res.status(500).send("you can only delete your post")
+export const deleteComment = async (req, res) => {
+console.log("fired")
+  try {
+    const comment = await Comment.findById(req.params.id);
+    const IsAdmin = req.body.d1;
+    console.log(IsAdmin)
+    if (comment.user._id.toString() !== req.userId && !IsAdmin) {
+      return res.status(403).send("You can only delete your post");
+    }
+
+    await comment.deleteOne();
+    res.status(200).send("comment deleted!");
+  } catch (err) {
+    console.error("❗ Error in deleteComment:", err);
+    res.status(500).send("Internal Server Error");
   }
-  await comment.deleteOne()
-  res.status(200).send("comment deleted!")
-}
+};

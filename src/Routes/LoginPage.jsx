@@ -30,7 +30,7 @@ const LoginPage = () => {
           <form onSubmit={(e)=>Submitted(e)} className='flex flex-col gap-5 px-12 mt-8' >
           <span className='text-2xl font-bold'> Login</span>
           <input className='w-full shadow-[0_0_0_0.5px_rgba(0,0,0,1)] h-[2rem] rounded-3xl px-3' placeholder='Username' ref={username}/>
-          <input className='w-full shadow-[0_0_0_0.5px_rgba(0,0,0,1)] h-[2rem] rounded-3xl px-3' placeholder='Password' ref={password}/>
+          <input className='w-full shadow-[0_0_0_0.5px_rgba(0,0,0,1)] h-[2rem] rounded-3xl px-3' placeholder='Password' type="password" ref={password}/>
           <button className='h-11 w-24 ml-24 bg-blue-800 rounded-3xl text-white' type='submit'>Login</button>
           <Link to="/register" className='flex items-center justify-center underline decoration-yellow-400'>Register</Link>
           </form>

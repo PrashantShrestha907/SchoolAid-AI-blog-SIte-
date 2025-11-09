@@ -211,7 +211,7 @@ const handleSearch =(e)=>{
               <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[0]?.category}</span>
               <span className='font-medium text-sm text-blue-500'>{formattedDate(0)}</span>
             </div>
-            <span className='text-2xl font-bold'>{popularData[0]?.desc}</span>
+            <span className='text-2xl font-bold'>{popularData[0]?.title}</span>
           </div>
 
           {/* Featured Post Right */}
@@ -220,26 +220,19 @@ const handleSearch =(e)=>{
 
             <div className='flex gap-4'  onClick={()=>handleRedirect(1)}>
               <Link to="" className='flex-[0_0_25%]'>
-                {/* <IKImage
-                  urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
-                  path="/featured2.jpeg"
-                  loading="lazy"
-                  lqip={{ active: true, quality: 20 }}
-                  className="object-cover w-[10rem] h-[9rem] rounded-3xl mt-8"
-                /> */}
                 <img src={popularData[1]?.img||"/postImg.jpeg"} alt="" className="object-cover w-[10rem] h-[9rem] rounded-3xl mt-8"/>
               </Link>
-              <div className='flex flex-col gap-y-6'  onClick={()=>handleRedirect(2)}>
+              <div className='flex flex-col gap-y-6'>
                 <div className='flex items-start justify-start gap-3 mt-10 '>
                   <span className='font-bold text-sm text-black'>02</span>
                   <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[1]?.category}</span>
                   <span className='font-medium text-sm text-blue-500'>{formattedDate(1)}</span>
                 </div>
-                <span className='text-xl font-bold '>{popularData[1]?.desc}</span>
+                <span className='text-xl font-bold '>{popularData[1]?.title}</span>
               </div>
             </div>
 
-            <div className='flex gap-4'  onClick={()=>handleRedirect(3)}>
+            <div className='flex gap-4'  onClick={()=>handleRedirect(2)}>
               <Link to="" className='flex-[0_0_25%]'>
                 {/* <IKImage
                   urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
@@ -256,11 +249,11 @@ const handleSearch =(e)=>{
                   <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[2]?.category}</span>
                   <span className='font-medium text-sm text-blue-500'>{formattedDate(2)}</span>
                 </div>
-                <span className=' text-xl font-bold  '>{popularData[2]?.desc}</span>
+                <span className=' text-xl font-bold  '>{popularData[2]?.title}</span>
               </div>
             </div>
 
-            <div className='flex gap-4'>
+            <div className='flex gap-4'  onClick={()=>handleRedirect(3)}>
               <Link to="" className='flex-[0_0_25%]'>
                 <img src={popularData[3]?.img||"/postImg.jpeg"} alt=""  className="object-cover  w-[10rem] h-[9rem] rounded-3xl "/>
               </Link>
@@ -270,7 +263,7 @@ const handleSearch =(e)=>{
                   <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[3]?.category}</span>
                   <span className='font-medium text-sm text-blue-500'>{formattedDate(3)}</span>
                 </div>
-                <span className='text-xl font-bold '>{popularData[3]?.desc}</span>
+                <span className='text-xl font-bold '>{popularData[3]?.title}</span>
               </div>
             </div>
           </div>
