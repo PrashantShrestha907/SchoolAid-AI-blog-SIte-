@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -8,6 +9,9 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+
+
+
 import {
   $getSelection,
   $isRangeSelection,
@@ -18,8 +22,9 @@ import { $generateHtmlFromNodes } from "@lexical/html";
 import { HeadingNode, $createHeadingNode } from "@lexical/rich-text";
 import { $setBlocksType } from "@lexical/selection";
 import { ListItemNode, ListNode } from "@lexical/list";
-import { $createImageNode } from './ImageNode';
-import { ImageNode } from './ImageNode';
+import { $createImageNode } from "./ImageNode";
+import { ImageNode } from "./ImageNode";
+import PastePlugin from "./PastePlugin";
 
 const Toolbar = () => {
   const [editor] = useLexicalComposerContext();
@@ -44,10 +49,11 @@ const OnChangeHandler = ({ onChange }) => {
 
   const handleEditorChange = (editorState) => {
     editorState.read(() => {
-      const htmlContent = $generateHtmlFromNodes(editor, null);
+      const htmlContent = $generateHtmlFromNodes(editor,null);
       onChange(htmlContent);
     });
   };
+ 
 
   return <OnChangePlugin onChange={handleEditorChange} />;
 };
@@ -109,6 +115,7 @@ const EditorContent = ({ insertImageRef }) => {
       <HistoryPlugin />
       <AutoFocusPlugin />
       <ListPlugin />
+     
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { AuthContext } from "./Context/AuthContext";
 const PostFiles = ({ postData, postId }) => {
   const navigate = useNavigate();
   const {user} = useContext(AuthContext)
+
   const handleCategory = (category) =>{
     navigate(`/postlist?category=${category}`)
   }
@@ -67,7 +68,7 @@ const PostFiles = ({ postData, postId }) => {
             {formattedDate}
           </p>
           <div
-            dangerouslySetInnerHTML={{ __html: postData.content }}
+            dangerouslySetInnerHTML={{ __html: postData.desc}}
           />
           {/* <Link
             to={`/post/${postData.slug}`}
@@ -75,8 +76,11 @@ const PostFiles = ({ postData, postId }) => {
           >
             Read More
           </Link> */}
+          <div className="flex justify-start gap-5">
+
           <div  className="text-blue-800 underline decoration-blue-900 hover:text-blue-950 px-0 cursor-pointer w-max" onClick={()=>handleRedirect()}>
             Read More
+          </div>
           </div>
           <span className="text-blue-800 cursor-default">Views: {postData.visit}</span>
         </div>

@@ -1,6 +1,18 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 
+//get all user 
+
+export const getAllUser = async (req, res ) =>{
+
+  const user = await User.find().select("-password");
+  if (!user){
+    return res.status(404).send("No users")
+  }
+  return res.status(200).send(user)
+}
+
+
 //get a user
 
 export const getUser = async (req, res) => {
@@ -13,6 +25,27 @@ export const getUser = async (req, res) => {
   }
   res.status(404).send("User not found ");
 };
+
+export const editProfile = async (req,res)=>{
+  
+try {
+    const id = req.params.id;
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+console.log(updatedUser)
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
 
 export const getSavedPosts = async(req,res) => {
   const page = parseInt(req.query.page) || 1

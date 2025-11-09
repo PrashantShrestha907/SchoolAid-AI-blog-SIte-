@@ -8,7 +8,8 @@ import cors from "cors"
 import cookieParser from 'cookie-parser';
 
 const app = express()
-
+app.use(express.json({ limit: "10mb" })); // ✅ increase to 10MB
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cors({
   origin: "http://localhost:5173",
 }));

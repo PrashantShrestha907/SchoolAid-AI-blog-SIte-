@@ -46,6 +46,7 @@ const Navbar = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [open]);
+  console.log(user)
 
   return (
     <>
@@ -83,16 +84,14 @@ const Navbar = () => {
           <Link to="/aboutus" className="hover:text-gray-500">
             About
           </Link>
+          {user.IsAdmin && (<Link to="/admin" className="hover:text-gray-500">
+            All Users
+          </Link>)}
           
             {user ? (
               <div onClick={() => navigate("/profile")} className="cursor-pointer">
-                <IKImage
-                  urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
-                  path={`/${user.img}`}
-                  loading="lazy"
-                  lqip={{ active: true, quality: 20 }}
-                  className="hidden lg:block lg:object-cover w-12 h-12 rounded-full flex-[0_0_40%] "
-                />
+                <img src={user.img}  className="hidden lg:block lg:object-cover w-12 h-12 rounded-full flex-[0_0_40%] "
+                 alt="" />
               </div>
             ) : (
               <Link to="/login">

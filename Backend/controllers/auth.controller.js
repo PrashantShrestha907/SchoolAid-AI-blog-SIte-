@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from 'bcrypt';
+import { img } from "framer-motion/client";
 import jwt from 'jsonwebtoken';
 
 const JWT=process.env.JWT_SECRET
@@ -17,7 +18,8 @@ export const registerUser = async (req,res) => {
     const user = new User({
         username: req.body.username,
         email: req.body.email,
-        password: hashedpassword
+        password: hashedpassword,
+        img: req.body.img
     });
     const saveduser = await user.save();
     const userWithAdmin = await User.findById(saveduser._id).select('+IsAdmin');

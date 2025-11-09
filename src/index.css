@@ -13,11 +13,17 @@ body{
 /* EditorComponent.css */
 .editor-input {
   min-height: 300px;
-  outline: none;
+  outline: 20px;
   padding: 10px;
   font-size: 16px;
 }
-
+#root *, .editor-container *, .editor-input, .editor-input * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  pointer-events: auto !important;
+}
 .editor-placeholder {
   color: #f5f5f5;
   position: absolute;
@@ -96,4 +102,23 @@ body{
 
 .infinite-scroll-component::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
+}
+
+.page-content {
+  padding: 1.5rem 1rem;
+  min-height: calc(100vh - 56px); /* 56px is typical navbar height */
+  background-color: #f8f9fa; /* Optional light background */
+}
+
+/* For larger screens */
+@media (min-width: 768px) {
+  .page-content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .page-content {
+    padding: 2.5rem 2rem;
+  }
 }

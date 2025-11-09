@@ -9,6 +9,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 
 const FetchPost = async (pageParam, searchParams) => {
   const searchParamsobj = Object.fromEntries(searchParams.entries())
+  console.log(searchParamsobj)
   const res = await axios.get("http://localhost:3000/post", {
     params: { page: pageParam, ...searchParamsobj },
   });
@@ -23,6 +24,10 @@ const PostList = () => {
   const handleSearchClick = (type) =>{
     setClicked(type)
     navigate(`/postlist?sort=${type}`)
+  }
+  const handleSearch =(e)=>{
+     e.preventDefault()
+      navigate(`/postlist?search=${e.target.search.value}`)
   }
 
   const {  
@@ -41,6 +46,7 @@ const PostList = () => {
   });
 
   const newData = data?.pages?.flatMap((page) => page.posts) || [];
+  console.log(newData)
 
   if (status === "loading") return "Loading...";
   if (status === "error") return "Something Went Wrong!";
@@ -62,6 +68,7 @@ const PostList = () => {
           type="text"
           className="mb-4 px-3 py-2 bg-white rounded-2xl w-[70%]"
           placeholder="search a post..."
+          onSubmit={(e)=>handleSearch(e)}
         />
         <p className="mb-3 text-lg  text-blue-600">Filter</p>
         <div className="flex flex-col gap-2">
@@ -136,11 +143,14 @@ const PostList = () => {
 
         <div className="hidden md:flex flex-col gap-2 flex-[0_0_30%] sticky top-8 self-start">
           <p className="my-2 text-xl  text-blue-600">Search</p>
+          <form action="" onSubmit={(e)=>handleSearch(e)}>
           <input
             type="text"
             className="mb-4 px-3 py-2 bg-white rounded-2xl w-[70%]"
+            name="search"
             placeholder="search a post..."
           />
+          </form>
           <p className="mb-3 text-lg  text-blue-600">Filter</p>
           <div className="flex items-center gap-2">
             <button className={`h-[0.61rem] w-[0.61rem] ${clicked === "Newest"? 'bg-[#e40599]':'bg-white'} shadow-[0_0_0_1px_black] rounded-sm`} onClick={()=>handleSearchClick("Newest")}>
@@ -170,20 +180,20 @@ const PostList = () => {
           <Link to="" className="underline hover:text-blue-500">
             All
           </Link>
-          <Link to="" className="underline hover:text-blue-500">
-            Web Design
+          <Link to="?category=Physics" className="underline hover:text-blue-500">
+            Physics
           </Link>
-          <Link to="" className="underline hover:text-blue-500">
-            Development
+          <Link to="?category=Chemistry" className="underline hover:text-blue-500">
+            Chemistry
           </Link>
-          <Link to="" className="underline hover:text-blue-500">
-            Database
+          <Link to="?category=Math" className="underline hover:text-blue-500">
+            Math
           </Link>
-          <Link to="" className="underline hover:text-blue-500">
-            Search Engine
+          <Link to="?category=Biology" className="underline hover:text-blue-500">
+            Biology
           </Link>
-          <Link to="" className="underline hover:text-blue-500">
-            Marketing
+          <Link to="?category=Computer" className="underline hover:text-blue-500">
+            Computer
           </Link>
         </div>
       </div>

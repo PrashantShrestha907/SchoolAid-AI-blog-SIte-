@@ -1,12 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Navbar from '../Components/Navbar'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { IKImage } from 'imagekitio-react'
 import PostFiles from '../Components/PostFiles'
 import { AuthContext } from '../Components/Context/AuthContext'
 import axios from 'axios'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
+import { polygon } from 'framer-motion/client'
 
 const FetchPost = async (pageParam) => {
   const res = await axios.get("http://localhost:3000/post", {
@@ -16,8 +17,55 @@ const FetchPost = async (pageParam) => {
 };
 
 const Homepage = () => {
+  const navigate = useNavigate();
   const {user} = useContext(AuthContext)
   const {token} = useContext(AuthContext)
+  const [popularData,setPopularData]= useState([])
+
+  useEffect(()=>{
+  const fetchPopularPost= async()=>{
+    const res = await axios.get("http://localhost:3000/post/mostpopular"); 
+    setPopularData(res.data) //axios.get .post .delete .put
+  }
+  fetchPopularPost()
+},[])//togglebutton (on,off)
+// console.log(popularData)
+
+const handleSearch =(e)=>{
+     e.preventDefault()
+      navigate(`/postlist?search=${e.target.search.value}`)
+  }
+
+  const mutation = useMutation({
+  mutationFn: async ({ index}) => {
+    const postId = popularData[index]?._id;
+    if (!postId) throw new Error("Post ID is undefined"); // optional safety
+    return axios.patch(`http://localhost:3000/post/visit/${postId}`, {
+      userId: user._id
+    });
+  },
+  onSuccess: (data, variables) => {
+    const index = variables.index; // retrieve index from variables
+    navigate(`/post/${popularData[index]?.slug}`);
+  },
+  onError:(err)=>{
+    console.log(err.message)
+  }
+});
+  // console.log(postData)
+  const handleRedirect = (index)=>{
+   mutation.mutate({index});
+  }
+   const formattedDate = (index)=> new Date(popularData[index]?.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour:"numeric",
+      minute:"numeric"
+    }
+  );
 
    const {  
     data,
@@ -41,7 +89,7 @@ const Homepage = () => {
 
   return (
     <>
-      <div className='px-4 md:px-8 lg:px-16 xl:px-32 z-1'>
+      <div className='px-8 md:px-8 lg:px-16 xl:px-32 z-1'>
         <Navbar />
         
 
@@ -130,7 +178,14 @@ const Homepage = () => {
             <span className='font-semibold px-4'>|</span>
           </div>
           {/* search bar */}
-          <input type="text" className="px-4 py-2 mr-3 rounded-3xl focus:outline-none focus:bg-black focus:text-white" placeholder='search a post..' />
+          <form onSubmit={handleSearch} className="flex">
+  <input
+    type="text"
+    name="search" // important to access via e.target.search.value
+    className="px-4 py-2 rounded-3xl focus:outline-none focus:bg-black focus:text-white"
+    placeholder="search a post..."
+  />
+</form>
         </div>
 
         {/* Featured Posts */}
@@ -140,85 +195,82 @@ const Homepage = () => {
 
           {/* Featured Post Left */}
 
-          <div className='flex flex-col gap-4 '>
+          <div className='flex flex-col gap-4 ' onClick={()=>handleRedirect(0)} >
             <Link to="">
-              <IKImage
+              {/* <IKImage
                 urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
-                path="/featured1.jpeg"
+                src={popularData[0]?.img|| path:"/postImg.jpeg"}
                 loading="lazy"
                 lqip={{ active: true, quality: 20 }}
-                className="object-cover w-50 h-[20rem] rounded-3xl mt-8"
-              />
+                className="object-cover w-[45rem] h-[20rem] rounded-3xl mt-8"
+              /> */}
+              <img src={popularData[0]?.img||"/postImg.jpeg"} alt="" className="object-cover w-[45rem] h-[20rem] rounded-3xl mt-8" />
             </Link>
             <div className='flex items-center justify-start gap-3'>
               <span className='font-bold text-sm text-black'>01</span>
-              <span className='font-medium text-sm text-blue-800'>Web Design</span>
-              <span className='font-medium text-sm text-blue-500'>2 days ago</span>
+              <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[0]?.category}</span>
+              <span className='font-medium text-sm text-blue-500'>{formattedDate(0)}</span>
             </div>
-            <span className='text-2xl font-bold'>Mastering Web Design: Tips of Building Scalable Designs</span>
+            <span className='text-2xl font-bold'>{popularData[0]?.desc}</span>
           </div>
 
           {/* Featured Post Right */}
 
           <div className='flex flex-col gap-3 h-[35rem]'>
 
-            <div className='flex gap-4'>
+            <div className='flex gap-4'  onClick={()=>handleRedirect(1)}>
               <Link to="" className='flex-[0_0_25%]'>
-                <IKImage
+                {/* <IKImage
                   urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
                   path="/featured2.jpeg"
                   loading="lazy"
                   lqip={{ active: true, quality: 20 }}
                   className="object-cover w-[10rem] h-[9rem] rounded-3xl mt-8"
-                />
+                /> */}
+                <img src={popularData[1]?.img||"/postImg.jpeg"} alt="" className="object-cover w-[10rem] h-[9rem] rounded-3xl mt-8"/>
               </Link>
-              <div className='flex flex-col gap-y-6'>
+              <div className='flex flex-col gap-y-6'  onClick={()=>handleRedirect(2)}>
                 <div className='flex items-start justify-start gap-3 mt-10 '>
                   <span className='font-bold text-sm text-black'>02</span>
-                  <span className='font-medium text-sm text-blue-800'>Database</span>
-                  <span className='font-medium text-sm text-blue-500'>4 hours ago</span>
+                  <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[1]?.category}</span>
+                  <span className='font-medium text-sm text-blue-500'>{formattedDate(1)}</span>
                 </div>
-                <span className='text-xl font-bold '>How to optimize Database Performance</span>
+                <span className='text-xl font-bold '>{popularData[1]?.desc}</span>
               </div>
             </div>
 
-            <div className='flex gap-4'>
+            <div className='flex gap-4'  onClick={()=>handleRedirect(3)}>
               <Link to="" className='flex-[0_0_25%]'>
-                <IKImage
+                {/* <IKImage
                   urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
                   path="/featured3.jpeg"
                   loading="lazy"
                   lqip={{ active: true, quality: 20 }}
                   className="object-cover  w-[10rem] h-[9rem] rounded-3xl "
-                />
+                /> */}
+                <img src={popularData[2]?.img||"/postImg.jpeg"} alt=""  className="object-cover  w-[10rem] h-[9rem] rounded-3xl "/>
               </Link>
               <div className='flex flex-col gap-y-6'>
                 <div className='flex items-start justify-start gap-3  '>
                   <span className='font-bold text-sm text-black'>03</span>
-                  <span className='font-medium text-sm text-blue-800'>Web Design</span>
-                  <span className='font-medium text-sm text-blue-500'>1 hours ago</span>
+                  <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[2]?.category}</span>
+                  <span className='font-medium text-sm text-blue-500'>{formattedDate(2)}</span>
                 </div>
-                <span className=' text-xl font-bold  '>Understanding the Psychology of Color in Web Design</span>
+                <span className=' text-xl font-bold  '>{popularData[2]?.desc}</span>
               </div>
             </div>
 
             <div className='flex gap-4'>
               <Link to="" className='flex-[0_0_25%]'>
-                <IKImage
-                  urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
-                  path="/featured4.jpeg"
-                  loading="lazy"
-                  lqip={{ active: true, quality: 20 }}
-                  className="object-cover w-[10rem] h-[9rem] rounded-3xl "
-                />
+                <img src={popularData[3]?.img||"/postImg.jpeg"} alt=""  className="object-cover  w-[10rem] h-[9rem] rounded-3xl "/>
               </Link>
               <div className='flex flex-col gap-y-6'>
                 <div className='flex items-start justify-start gap-3 '>
                   <span className='font-bold text-sm text-black'>04</span>
-                  <span className='font-medium text-sm text-blue-800'>Marketing</span>
-                  <span className='font-medium text-sm text-blue-500'>6 hours ago</span>
+                  <span className='font-medium text-sm text-blue-800 cursor-pointer'>{popularData[3]?.category}</span>
+                  <span className='font-medium text-sm text-blue-500'>{formattedDate(3)}</span>
                 </div>
-                <span className='text-xl font-bold '>The Power of Personalization in Marketing</span>
+                <span className='text-xl font-bold '>{popularData[3]?.desc}</span>
               </div>
             </div>
           </div>

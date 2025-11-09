@@ -1,13 +1,26 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IKImage } from 'imagekitio-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { img } from 'framer-motion/client';
 
 const RegisterPage = () => {
   const bgurl = `${import.meta.env.VITE_IK_URL_ENDPOINT}/background.jpg`;
   const navigate = useNavigate()
+  const [image, setImage] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Base64 string stored here
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const mutation= useMutation({
     mutationFn: async(registerData)=>{
       return await axios.post(`http://localhost:3000/auth/register`,
@@ -26,7 +39,8 @@ const RegisterPage = () => {
     const data = {
       username: formData.get("username"),
       email: formData.get("email"),
-      password: formData.get("password")
+      password: formData.get("password"),
+      img: image
     }
     mutation.mutate(data)
   }
@@ -43,6 +57,7 @@ const RegisterPage = () => {
           <input className='w-full shadow-[0_0_0_0.5px_rgba(0,0,0,1)] h-[2rem] rounded-3xl px-3' name='email' placeholder='Email'/>
           <input className='w-full shadow-[0_0_0_0.5px_rgba(0,0,0,1)] h-[2rem] rounded-3xl px-3' placeholder='Password'/>
           <input className='w-full shadow-[0_0_0_0.5px_rgba(0,0,0,1)] h-[2rem] rounded-3xl px-3' name='password' placeholder='Password Again'/>
+           <input type="file" accept="image/*" onChange={handleImageChange} required />
           <button className='h-11 w-24 ml-24 bg-blue-800 rounded-3xl text-white'>Sign In</button>
           <Link to="/login" className='flex items-center justify-center underline decoration-yellow-400'>Login</Link>
         </form>

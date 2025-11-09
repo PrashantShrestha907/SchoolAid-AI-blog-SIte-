@@ -9,17 +9,31 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Upload from "../Components/Upload";
 
+
 const Write = () => {
   const [data, setData] = useState("");
   const [cover, setCover] = useState(null);
+  const textareaRef = useRef(null);
 
   const navigate = useNavigate();
   const { user, token } = useContext(AuthContext);
   const [editorValue, setEditorValue] = useState("");
   const insertImageRef = useRef(null);
-  const handleEditorChange = (value) => {
-    setEditorValue(value);
+  const handleEditorChange = (event) => {
+    setEditorValue(event.target.value);
   };
+  
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Reset height to calculate scrollHeight correctly
+      textarea.style.height = "16rem";
+
+      // Set height dynamically based on content, but cap at 10rem
+      const newHeight = Math.min(textarea.scrollHeight, 420); // 10rem = 160px (assuming 1rem = 16px)
+      textarea.style.height = newHeight + "px";
+    }
+  }, [editorValue]);
 
   useEffect(() => {
     if (data && data.url) {
@@ -31,35 +45,47 @@ const Write = () => {
   }, [data]);
 
   const mutation = useMutation({
-    mutationFn: async (newPost) => {
-      let tokenToUse = token;
-      return await axios.post("http://localhost:3000/post/create", newPost, {
-        headers: {
-          Authorization: `Bearer ${tokenToUse}`,
-        },
-      });
-    },
-    onSuccess: (res) => {
-      toast("Post added successfully", {
-        progressClassName: "my-progress-bar",
-        theme: "light",
-      });
-      navigate(`/post/${res.data.slug}`);
-    },
-  });
+  mutationFn: async (newPost) => {
+    let tokenToUse = token;
+    return await axios.post("http://localhost:3000/post/create", newPost, {
+      headers: {
+        Authorization: `Bearer ${tokenToUse}`,
+      },
+    });
+  },
+  onSuccess: (res) => {
+    toast("Post added successfully", {
+      progressClassName: "my-progress-bar",
+      theme: "light",
+    });
+    navigate(`/post/${res.data.slug}`);
+  },
+  onError: (err) => {
+    console.log(err);
+    console.log(err.message);
+  },
+});
+
+
+
+  
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
+  
     const formData = new FormData(e.target);
-    const data = {
-      title: formData.get("title"),
+    const data = {                       
+      title: formData.get("title"), 
       category: formData.get("category"),
       desc: formData.get("desc"),
       content: editorValue,
       user: user._id,
       img: cover && cover.url ? cover.url : "",
     };
+      console.log(data)
     mutation.mutate(data);
+    //summarizedText(editorValue)
     setCover(null);
   };
   
@@ -127,18 +153,21 @@ const Write = () => {
             placeholder="A Short Description"
             name="desc"
           />
-          <EditorComponent
-            onChange={handleEditorChange}
-            value={editorValue}
-            insertImageRef={insertImageRef}
-          />
-
+          <textarea value={editorValue} onChange={handleEditorChange} className="my-5 rounded-lg w-full p-5"
+          ref={textareaRef}
+            
+           ></textarea>
+        
+          <div className="flex justify-between items-center w-full">
+            
           <button
             className="my-5 bg-blue-700 text-white font-medium py-1 px-2 rounded-xl"
             type="submit"
           >
             Send
           </button>
+          
+          </div>
         </form>
       </div>
     </>
