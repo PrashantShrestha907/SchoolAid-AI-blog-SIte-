@@ -141,7 +141,7 @@ const PostPage = () => {
     minute: "numeric",
   });
   // console.log(data)
-
+console.log(data?.user?.username)
   return (
     <div className="px-8 md:px-8 lg:px-16 xl:px-32">
       <Navbar />
@@ -248,14 +248,14 @@ const PostPage = () => {
         <div className=" flex flex-col flex-wrap gap-2 flex-[0_0_25%] mt-5 pr-16 h-max sticky top-8  z-20">
           <h1 className="font-bold">Author</h1>
           <div className="flex gap-5 items-center">
-            {/* <IKImage
+            {data?.user?.username === "Prashant Shrestha" && (<IKImage
               urlEndpoint={import.meta.env.VITE_IK_URL_ENDPOINT}
               path={data.user.img||"Noavatar.jpg"}
               loading="lazy"
               lqip={{ active: true, quality: 20 }}
               className="object-cover w-10 h-10 rounded-full"
-            /> */}
-            <img src={data?.user?.img||"/Noavatar.jpg"} className="object-cover w-10 h-10 rounded-full" alt="" />
+            />)}
+            {data.user.username !== "Prashant Shrestha" && (<img src={data?.user?.img||"/Noavatar.jpg"} className="object-cover w-10 h-10 rounded-full" alt="" />)}
             <p className="text-blue-800 text-sm">{data.user.username}</p>
           </div>
           <p className="text-sm text-blue-500 mt-2">
